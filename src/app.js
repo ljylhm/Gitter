@@ -93,19 +93,18 @@ class App extends Component {
   async componentDidMount() {
     // 更新小程序提醒
     // this.updateApp()
-    console.log("here>>>")
     // 登录流程开始
     const { code } = await Taro.login()
     console.log("code>>>", code)
     try {
-      const { data } = http.post("https://mastercenter.cn/auth/wx_login",{code})
-      if(data && data.token){
-        USER_INFO.setData(data)
-        initPage.dispatchAll()
-      }
+      const { data } = await http.post("https://mastercenter.cn/auth/wx_login",{code})
+      console.log("data", data)
+      if(data) USER_INFO.setData(data)
     } catch (error) {
-      
+     
     }
+    initPage.setQueueStatus(false)
+    initPage.dispatchAll()
   }
 
   componentDidShow() {}

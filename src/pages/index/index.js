@@ -1,15 +1,18 @@
-import Taro, { Component } from '@tarojs/taro'
+import Taro, { Component, login } from '@tarojs/taro'
 import { View, Picker, Text, Swiper, SwiperItem, ScrollView } from '@tarojs/components'
 import { GLOBAL_CONFIG } from '../../constants/globalConfig'
 import { languages } from '../../utils/language'
+import { initPage } from '../../utils/blockQueue'
 import { get as getGlobalData, set as setGlobalData } from '../../utils/global_data'
 import { AtNoticebar } from 'taro-ui'
 
 import ItemList from '../../components/index/itemList'
 import Segment from '../../components/index/segment'
 import Empty from '../../components/index/empty'
+import Login from '../../components/Login/index'
 
 import './index.less'
+import USER_INFO from '../../constant/user'
 
 class Index extends Component {
 
@@ -51,7 +54,8 @@ class Index extends Component {
           'value': 'monthly'
         }],
         languages
-      ]
+      ],
+      userHasToken: false
     }
   }
 
@@ -74,7 +78,15 @@ class Index extends Component {
   componentWillUnmount() { }
 
   componentDidShow() {
-    this.updateLanguages()
+
+    initPage.subscribe("index", () => {
+      const token = USER_INFO.getToken()
+      this.setState({
+        userHasToken: !!token
+      })
+    })
+
+    // this.updateLanguages()
   }
 
   componentDidHide() { }
@@ -209,52 +221,57 @@ class Index extends Component {
     } else if (categoryValue === 'monthly') {
       categoryType = 2
     }
-    const { developers, repos, current, notice, fixed, notice_closed } = this.state
+    const { developers, repos, current, notice, fixed, notice_closed, userHasToken } = this.state
     return (
-      <View className='content'>
-        <View className={fixed ? 'segment-fixed' : ''}>
-          <Segment tabList={['REPO', 'USER']}
-            current={current}
-            onTabChange={this.onTabChange}
-          />
-        </View>
+      <View>
         {
-          fixed &&
-          <View className='segment-placeholder' />
-        }
-        {
-          (notice.status && !notice_closed) &&
-          <AtNoticebar icon='volume-plus'
-            close
-            onClose={this.onCloseNotice.bind(this)}>
-            {notice.content}
-          </AtNoticebar>
-        }
-        {
-          current === 0 &&
-          (repos.length > 0 ? <ItemList itemList={repos} type={0} categoryType={categoryType} /> : <Empty />)
-        }
-        {
-          current === 1 &&
-          (developers.length > 0 ? <ItemList itemList={developers} type={1} categoryType={categoryType} /> : <Empty />)
-        }
-        {
-          this.state.range[1].length > 0 &&
-          <View>
-            <Picker mode='multiSelector'
-              range={this.state.range}
-              rangeKey={'name'}
-              onChange={this.onChange}
-            >
-              <View className='filter' animation={this.state.animation}>
-                <Text className='category'>{this.state.category.name}</Text>
-                &
-                <Text className='language'>{this.state.language.name}</Text>
-              </View>
-            </Picker>
+          !userHasToken ?  <Login /> : <View className='content'>
+          <View className={fixed ? 'segment-fixed' : ''}>
+            <Segment tabList={['REPO', 'USER']}
+              current={current}
+              onTabChange={this.onTabChange}
+            />
           </View>
+          {
+            fixed &&
+            <View className='segment-placeholder' />
+          }
+          {
+            (notice.status && !notice_closed) &&
+            <AtNoticebar icon='volume-plus'
+              close
+              onClose={this.onCloseNotice.bind(this)}>
+              {notice.content}
+            </AtNoticebar>
+          }
+          {
+            current === 0 &&
+            (repos.length > 0 ? <ItemList itemList={repos} type={0} categoryType={categoryType} /> : <Empty />)
+          }
+          {
+            current === 1 &&
+            (developers.length > 0 ? <ItemList itemList={developers} type={1} categoryType={categoryType} /> : <Empty />)
+          }
+          {
+            this.state.range[1].length > 0 &&
+            <View>
+              <Picker mode='multiSelector'
+                range={this.state.range}
+                rangeKey={'name'}
+                onChange={this.onChange}
+              >
+                <View className='filter' animation={this.state.animation}>
+                  <Text className='category'>{this.state.category.name}</Text>
+                  &
+                  <Text className='language'>{this.state.language.name}</Text>
+                </View>
+              </Picker>
+            </View>
+          }
+        </View>
         }
       </View>
+    
     )
   }
 }

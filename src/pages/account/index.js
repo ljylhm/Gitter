@@ -10,6 +10,7 @@ import { hasLogin } from '../../utils/common'
 
 import './index.less'
 import api from "../../service/api";
+import { http } from '../../utils/http'
 
 class Index extends Component {
 
@@ -136,11 +137,12 @@ class Index extends Component {
     }
   }
 
-  login(e) {
+  async login(e) {
     console.log("e", e)
-    // Taro.navigateTo({
-    //   url: '/pages/login/login'
-    // })
+    const result = await http.post("https://mastercenter.cn/auth/wx_get_phone",{
+      code: e.detail.code
+    })
+    console.log("result", result)
   }
 
   handleStar() {

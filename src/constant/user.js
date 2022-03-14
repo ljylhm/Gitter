@@ -1,7 +1,7 @@
 // 用户的默认信息
 const DEFAULT_USER = {
 	token: "",
-	openid: "",
+	open_id: "",
 }
 
 const USER_INFO = {
@@ -22,8 +22,9 @@ const USER_INFO = {
 		return 0
 	},
 	setOpenId: (openId) => {
-		if (openId) USER_INFO.user.openid = openId
-	}
+		if (openId) USER_INFO.user.open_id = openId
+	},
+	getOpenId: () => USER_INFO.user.open_id,
 }
 
 export default USER_INFO
