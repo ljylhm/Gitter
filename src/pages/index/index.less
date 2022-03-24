@@ -3,6 +3,26 @@
   flex-direction: column;
 }
 
+.nav-container{
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 40px 20px;
+  background: #fff;
+  font-size: 28px;
+  .nav-content{
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 36px;
+    position: relative;
+    top: -2px;
+    text-align: center;
+  }
+}
+
 .filter {
   display: flex;
   align-items: center;
@@ -45,4 +65,11 @@
 .segment-placeholder {
   height: 80px;
   background-color: white;
+}
+
+.load-more{
+  font-size: 26px;
+  color: #999999;
+  text-align: center;
+  padding: 20px;
 }

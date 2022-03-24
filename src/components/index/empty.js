@@ -12,7 +12,7 @@ export default class Segment extends Component {
   }
 
   static defaultProps = {
-    content: 'Oops! Nothing here...'
+    content: '暂无数据'
   }
 
   componentWillMount() {
@@ -21,9 +21,9 @@ export default class Segment extends Component {
   render() {
     const { content } = this.props
     return (
-      <View className='content'>
-        <Image className='img' src={require('../../assets/images/octocat.png')} />
-        <Text className='text'>{content}</Text>
+      <View className='empty-content'>
+        <Image className='empty-img' src={require('../../assets/images/octocat.png')} />
+        <Text className='empty-text'>{content}</Text>
       </View>
     )
   }

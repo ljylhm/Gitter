@@ -1,4 +1,5 @@
 import Taro from '@tarojs/taro'
+import USER_INFO from '../constant/user'
 
 const jsonToForm = (json) => {
     const str = []
@@ -15,7 +16,7 @@ const get = (url, data = {}, options = {}) => {
             data,
             header: {
                 ...options,
-                Authorization: ""
+                'Authorization': USER_INFO.getToken()
             },
             success: res => {
                 resolve(res.data)
@@ -36,6 +37,7 @@ const post = (url, data = {}) => {
             method: 'POST',
             header: {
                 'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': "bearer " + USER_INFO.getToken()
             },
             success: res => {
                 resolve(res.data)

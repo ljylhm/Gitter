@@ -47,7 +47,8 @@ class App extends Component {
       'pages/repo/starredRepo',
       'pages/repo/file',
       'pages/repo/repoEvents',
-      'pages/login/login'
+      'pages/login/login',
+      'pages/list/list'
     ],
     window: {
       backgroundTextStyle: 'dark',
@@ -58,7 +59,7 @@ class App extends Component {
     tabBar: {
       list: [{
         pagePath: 'pages/index/index',
-        text: 'Trending',
+        text: '课程',
         iconPath: './assets/images/tab_trend.png',
         selectedIconPath: './assets/images/tab_trend_s.png'
       }, {
@@ -103,6 +104,7 @@ class App extends Component {
     } catch (error) {
      
     }
+    console.log("xxxxx")
     initPage.setQueueStatus(false)
     initPage.dispatchAll()
   }

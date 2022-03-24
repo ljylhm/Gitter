@@ -5,7 +5,6 @@ import { http } from "../../utils/http"
 import USER_INFO from '../../constant/user';
 import './index.less'
 
-
 export default class Login extends Component {
 
  async login(e) {
@@ -14,7 +13,18 @@ export default class Login extends Component {
         code: e.detail.code,
         open_id: USER_INFO.getOpenId() 
     })
-    console.log("result", result)
+    if(result && result.code == 1001 && result.data && result.data.token ){
+      USER_INFO.setData({
+        ...result.data.user,
+        token: result.data.token,
+        open_id: result.data.open_id
+      })
+      this.props.callback && this.props.callback(result)
+    }else{
+      Taro.showToast({
+        title:"登录失败"
+      })
+    }
  }
 
   render() {

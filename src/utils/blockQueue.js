@@ -10,6 +10,8 @@ class BlockQueue {
         this.errorStatus = error_status
     }
 
+    getErrorStatus = () => this.errorStatus
+
     setErrorStatus = () => {
         return this.errorStatus
     }
@@ -25,6 +27,7 @@ class BlockQueue {
     }
 
     dispatchAll = () => {
+        console.log("是否阻塞", this.isBlocking, this.queue)
         if (!this.isBlocking)
           Object.keys(this.queue).forEach((item) => this.dispatch(item));
           else console.error(this.WARN_BLOCK_NOT_TIME);
@@ -37,7 +40,7 @@ class BlockUserQueue extends BlockQueue {
         const result_err  = this.getErrorStatus();
         let error_status = false;
         if (!result_err) error_status = true;
-    
+        console.log("userSubscribe", this.getQueueStatus(), this.queue)
         if (!this.getQueueStatus()) item && item(error_status, result_err);
         else {
           console.log("执行的次数", ++count);

@@ -26,7 +26,7 @@ export default class SearchBar extends Component {
           <AtIcon className='icon' value='search' size='18' color='#666' />
           <Input className='search-bar'
                  type='text'
-                 placeholder='Search what you want...'
+                 placeholder='输入关键字查询你的课程'
                  confirmType='search'
                  focus
                  onConfirm={onClickSearch.bind(this)}

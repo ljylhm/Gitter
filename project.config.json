@@ -58,12 +58,24 @@
 		"game": {
 			"list": []
 		},
+		"gamePlugin": {
+			"current": -1,
+			"list": []
+		},
 		"miniprogram": {
 			"list": [
 				{
 					"id": -1,
 					"name": "模拟更新",
-					"pathName": "pages/index/index"
+					"pathName": "pages/index/index",
+					"query": ""
+				},
+				{
+					"id": 1,
+					"name": "列表页",
+					"pathName": "pages/list/list",
+					"query": "s_time=123&e_time=321",
+					"scene": null
 				}
 			]
 		}
