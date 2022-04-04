@@ -28,27 +28,30 @@ class App extends Component {
       'pages/index/index',
       'pages/index/favoriteLanguages',
       'pages/account/index',
-      'pages/git/git',
-      'pages/git/tutorials',
-      'pages/activity/index',
-      'pages/search/index',
-      'pages/search/searchResult',
-      'pages/account/follow',
-      'pages/account/about',
-      'pages/account/developerInfo',
-      'pages/repo/contentList',
-      'pages/repo/issues',
-      'pages/repo/issueDetail',
-      'pages/repo/addIssue',
-      'pages/repo/addComment',
-      'pages/repo/repoList',
-      'pages/repo/repo',
-      'pages/repo/contributors',
-      'pages/repo/starredRepo',
-      'pages/repo/file',
-      'pages/repo/repoEvents',
+      // 'pages/git/git',
+      // 'pages/git/tutorials',
+      // 'pages/activity/index',
+      // 'pages/search/index',
+      // 'pages/search/searchResult',
+      // 'pages/account/follow',
+      // 'pages/account/about',
+      // 'pages/account/developerInfo',
+      // 'pages/repo/contentList',
+      // 'pages/repo/issues',
+      // 'pages/repo/issueDetail',
+      // 'pages/repo/addIssue',
+      // 'pages/repo/addComment',
+      // 'pages/repo/repoList',
+      // 'pages/repo/repo',
+      // 'pages/repo/contributors',
+      // 'pages/repo/starredRepo',
+      // 'pages/repo/file',
+      // 'pages/repo/repoEvents',
       'pages/login/login',
-      'pages/list/list'
+      'pages/list/list',
+      'pages/updateCourse/updateCourse',
+      'pages/vacationList/vacationList',
+      'pages/noUnionId/noUnionId'
     ],
     window: {
       backgroundTextStyle: 'dark',
@@ -62,12 +65,13 @@ class App extends Component {
         text: '课程',
         iconPath: './assets/images/tab_trend.png',
         selectedIconPath: './assets/images/tab_trend_s.png'
-      }, {
-        pagePath: 'pages/activity/index',
-        text: 'Activity',
-        iconPath: './assets/images/tab_news.png',
-        selectedIconPath: './assets/images/tab_news_s.png'
-      },
+      }, 
+      // {
+      //   pagePath: 'pages/activity/index',
+      //   text: 'Activity',
+      //   iconPath: './assets/images/tab_news.png',
+      //   selectedIconPath: './assets/images/tab_news_s.png'
+      // },
       // {
       //   pagePath: 'pages/git/git',
       //   text: 'Git',
@@ -76,7 +80,7 @@ class App extends Component {
       // },
       {
         pagePath: 'pages/account/index',
-        text: 'Me',
+        text: '我的',
         iconPath: './assets/images/tab_me.png',
         selectedIconPath: './assets/images/tab_me_s.png'
       }],
@@ -98,7 +102,7 @@ class App extends Component {
     const { code } = await Taro.login()
     console.log("code>>>", code)
     try {
-      const { data } = await http.post("https://mastercenter.cn/auth/wx_login",{code})
+      const { data } = await http.post("https://mastercenter.cn/api/auth/wx_login",{code})
       console.log("data", data)
       if(data) USER_INFO.setData(data)
     } catch (error) {

@@ -29,7 +29,7 @@ const get = (url, data = {}, options = {}) => {
     })
 }
 
-const post = (url, data = {}) => {
+const post = (url, data = {}, header = {} ) => {
     return new Promise(resolve => {
         Taro.request({
             url: url,
@@ -37,7 +37,8 @@ const post = (url, data = {}) => {
             method: 'POST',
             header: {
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': "bearer " + USER_INFO.getToken()
+                'Authorization': "bearer " + USER_INFO.getToken(),
+                ...header
             },
             success: res => {
                 resolve(res.data)

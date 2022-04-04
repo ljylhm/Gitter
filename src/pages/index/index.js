@@ -28,6 +28,12 @@ class Index extends Component {
 
   constructor(props) {
     super(props)
+
+    this.queryMonthData = {
+      full_start_time: "",
+      full_end_time: ""
+    }
+
     this.state = {
       current: 0,
       category: {
@@ -51,7 +57,8 @@ class Index extends Component {
       list: [],
       navStartTime:  moment().startOf('day')._d.getTime(),
       navEndTime:  moment().endOf('day')._d.getTime(),
-      pullStatus: 1     // 1 没有 2 正在拉取 3 没有数据 
+      pullStatus: 1,     // 1 没有 2 正在拉取 3 没有数据 
+      missionList: []
     }
   }
 
@@ -73,21 +80,39 @@ class Index extends Component {
 
   componentWillUnmount() { }
 
-  componentDidShow() {
+  initAction = () => {
+    const { list } = this.state
+    const token = USER_INFO.getToken()
+    this.setState({
+      userHasToken: !!token
+    })
+  }
 
+  componentDidShow() {
     initPage.userSubscribe("index", () => {
+      const { list } = this.state
       const token = USER_INFO.getToken()
-      console.log("token", token)
+      const result = Taro.getStorageSync("update-result")
+      if(result && result){
+        // 遍历当前的list
+        const wrapList = list.map(item=>{
+          if(result.id == item.id){
+            return {
+              ...item,
+              ...result
+            }
+          }
+          return item
+        })
+        this.setState({
+          list: wrapList
+        })
+        Taro.removeStorageSync("update-result")
+      }
       this.setState({
         userHasToken: !!token
       })
-      if(token) {
-        // const { navStartTime, navEndTime} = this.state
-        // this.fetchData(navStartTime, navEndTime)
-      }
     })
-
-    // this.updateLanguages()
   }
 
   componentDidHide() { }
@@ -95,6 +120,33 @@ class Index extends Component {
   onPullDownRefresh() {
    
   }
+
+  async login(e) {
+    const result = await http.post("https://mastercenter.cn/api/auth/wx_get_phone",{
+          code: e.detail.code,
+          open_id: USER_INFO.getOpenId(),
+          union_id: USER_INFO.getUnionId()
+    })
+    if(result && result.code == 1001 && result.data && result.data.token ){
+      USER_INFO.setData({
+        user: {
+          ...result.data.user,
+        },
+        token: result.data.token,
+      })
+      this.setState({
+        userHasToken: true,
+      })
+    }else{
+      Taro.redirectTo({
+         url: "/pages/noUnionId/noUnionId"
+      })
+      // Taro.showToast({
+      //   title:"登录失败"
+      // })
+    }
+  }
+
 
   onPageScroll(obj) {
     const { fixed } = this.state
@@ -150,82 +202,6 @@ class Index extends Component {
     return timeFormat(s_time, "yyyy-MM-dd") + " - " + timeFormat(e_time, "yyyy-MM-dd")
   }
 
-  onChange = e => {
-    const type = this.state.range[e.detail.value[0]]
-    const { navStartTime, navEndTime } = this.state
-    let param = {
-      navStartTime,
-      navEndTime
-    }
-    const createParams = (type) => {
-      return {
-        navStartTime: moment().startOf(type)._d.getTime(),
-        navEndTime: moment().endOf(type)._d.getTime()
-      }
-    }
-    param = createParams(type)
-    this.fetchData(param.navStartTime, param.navEndTime)
-    this.setState({
-      type: this.state.range[e.detail.value[0]],
-      ...param
-    })
-
-  }
-
-  updateLanguages() {
-    let favoriteLanguages = getGlobalData('favoriteLanguages')
-    if (favoriteLanguages && favoriteLanguages.length > 0) {
-      let language = favoriteLanguages[0]
-      if (language.name !== 'All') {
-        favoriteLanguages.unshift({
-          "urlParam": "",
-          "name": "All"
-        })
-      }
-      this.setState({
-        range: [
-          [{
-            'name': 'Today',
-            'value': 'daily'
-          },
-          {
-            'name': 'Week',
-            'value': 'weekly'
-          },
-          {
-            'name': 'Month',
-            'value': 'monthly'
-          }],
-          favoriteLanguages
-        ]
-      })
-    } else {
-      this.setState({
-        range: [
-          [{
-            'name': 'Today',
-            'value': 'daily'
-          },
-          {
-            'name': 'Week',
-            'value': 'weekly'
-          },
-          {
-            'name': 'Month',
-            'value': 'monthly'
-          }],
-          languages
-        ]
-      })
-    }
-  }
-
-  onTabChange(index) {
-    this.setState({
-      current: index
-    })
-  }
-
   onShareAppMessage(obj) {
     return {
       title: 'Github 今日热榜，随时随地发现您喜欢的开源项目',
@@ -240,17 +216,19 @@ class Index extends Component {
     Taro.setStorageSync(key, true)
   }
 
-  fetchData = async (start_time, end_time) => {
+  fetchData = async (start_time, end_time, type = "month") => {
     const { pullStatus } = this.state
-    const result = await http.post("https://mastercenter.cn/user/schedul",{
+    const result = await http.post("https://mastercenter.cn/api/user/schedul",{
       limit: 20,
       page: 1,
       start_time: start_time / 1000,
-      end_time: end_time / 1000
+      end_time: end_time / 1000,
+      ...this.queryMonthData
     })
     if(result && result.data){
       this.setState({
-        list: result.data.list,
+        list: type === "init" ? [] : result.data.list,
+        missionList: result.data.day,
         pullStatus: result.data.total > 0 ? pullStatus : 1
       })
     }
@@ -262,7 +240,7 @@ class Index extends Component {
     this.setState({
       pullStatus: 2
     })
-    const result = await http.post("https://mastercenter.cn/user/schedul",{
+    const result = await http.post("https://mastercenter.cn/api/user/schedul",{
       limit: 20,
       page: page + 1,
       start_time: navStartTime / 1000,
@@ -293,43 +271,6 @@ class Index extends Component {
     })
   }
 
-  handleAction(actionType){
-    const { navStartTime, navEndTime, type } = this.state
-    let nextStartTime = navStartTime 
-    let nextEndTime = navEndTime 
-    const ONE_DAY_TIME = 1000 * 60 * 60 * 24
-    const flag = actionType == "next" ? -1 : 1
-    if(type == "Today"){
-      if(actionType == "next"){
-        nextStartTime = navStartTime + ONE_DAY_TIME
-        nextEndTime = navEndTime + ONE_DAY_TIME
-      }else{
-        nextStartTime = navStartTime - ONE_DAY_TIME
-        nextEndTime = navEndTime - ONE_DAY_TIME
-      }
-    }else if(type == "Week"){
-      nextStartTime = moment(navStartTime).startOf("week").subtract('week', flag)._d.getTime()
-      nextEndTime = moment(navEndTime).endOf("week").subtract('week', flag).endOf("week")._d.getTime()
-    }else{
-      nextStartTime = moment(navStartTime).startOf("month").subtract('month', flag)._d.getTime()
-      nextEndTime = moment(navEndTime).endOf("month").subtract('month', flag).endOf("month")._d.getTime()
-    }
-    this.fetchData(nextStartTime, nextEndTime)
-    this.setState({
-      navStartTime: nextStartTime,
-      navEndTime: nextEndTime
-    })
-
-  }
-
-  nextAction(){
-    this.handleAction("next")    
-  }
-
-  prevAction(){
-    this.handleAction("prev")    
-  }
-
   pageParam = {
     limit: 20,
     page: 1
@@ -347,20 +288,31 @@ class Index extends Component {
     } else if (categoryValue === 'monthly') {
       categoryType = 2
     }
-    const { developers, repos, current, notice, fixed, notice_closed, userHasToken,list,navStartTime,navEndTime, type, pullStatus } = this.state
+    const { developers, repos, current, notice, fixed, notice_closed, userHasToken,list,navStartTime,navEndTime, type, pullStatus, missionList } = this.state
     return (
       <View>
         {
-          !userHasToken ?  <Login /> : <View className='content'>
-          {/* <View className={fixed ? 'segment-fixed' : ''}>
-            <Segment tabList={['REPO', 'USER']}
-              current={current}
-              onTabChange={this.onTabChange}
-            />
-          </View> */}
+          !userHasToken ?  
+          <View className='content-me'>
+            <Image mode='aspectFit'
+              className='logo'
+              src={require('../../assets/images/octocat.png')} />
+            <Button className='login_button' open-type='getPhoneNumber' onGetPhoneNumber={this.login}>Login</Button>
+            {/* <View className='login_button'
+              onClick={this.login.bind(this)}>
+              Login
+            </View> */}
+          </View>
+          : <View className='content'>
           <View style={{marginBottom: "15px"}}>
-            <Calendar onClickSearch={(data)=>{
-                this.fetchData(...data.value)
+            <Calendar missionList={missionList} onClickSearch={(data)=>{
+                if(data.type == "month" || data.type == "init"){
+                  this.queryMonthData = {
+                    full_start_time: data.value[0] / 1000,
+                    full_end_time: data.value[1] / 1000
+                  }
+                }
+                this.fetchData(...data.value, data.type)
             }}/>
           </View>
           {/* <View className='search-bar-fixed'>
@@ -374,18 +326,7 @@ class Index extends Component {
               {notice.content}
             </AtNoticebar>
           }
-          {/* <View className='nav-container'>
-            <AtIcon value='chevron-left' size='24' color='#2d8cf0' onClick={this.prevAction}></AtIcon>
-            <View className='nav-content'>
-            <View style={{"display":"inline-block","marginRight":"4px","position": "relative", "top": "-2px"}}>
-              <AtIcon value='clock' size='18' color='#2d8cf0' />
-            </View>
-            {
-              type == "Today" ? this.showDayText(navStartTime) : type == "Week" ? this.showWeekText(navStartTime, navEndTime) : this.showMonthText(navStartTime, navEndTime)
-            }</View>
-            <AtIcon value='chevron-right' size='24' color='#2d8cf0' onClick={this.nextAction}></AtIcon>
-          </View> */}
-
+          
           {
             list.length > 0 ? <View style={{padding: "20px 0px", background: "#fff"}}>
               <ItemList itemList={list} type={0} categoryType={categoryType} />
@@ -398,20 +339,6 @@ class Index extends Component {
              }
            </View>
           }
-          {/* {
-            <View>
-              <Picker mode='selector'
-                range={this.state.range}
-                onChange={this.onChange}
-              >
-                <View className='filter' animation={this.state.animation}>
-                  <Text className='category'>{this.state.category.name}</Text>
-                  &
-                  <Text className='language'>{this.state.language.name}</Text>
-                </View>
-              </Picker>
-            </View>
-          } */}
         </View>
         }
       </View>

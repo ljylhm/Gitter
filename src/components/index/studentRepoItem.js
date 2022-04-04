@@ -4,11 +4,11 @@ import { View, Text, Input, Textarea } from '@tarojs/components'
 import { timeFormat } from '../../utils/date'
 import { AtIcon, AtCard, AtInput, AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui'
 
-import './trendingRepoItem.less'
+import './studentRepoItem.less'
 import { http } from '../../utils/http';
 import USER_INFO from '../../constant/user';
 
-export default class TrendingRepoItem extends Component {
+export default class StudentRepoItem extends Component {
   static propTypes = {
     item: PropTypes.object,
     categoryType: PropTypes.number
@@ -22,7 +22,6 @@ export default class TrendingRepoItem extends Component {
   constructor(props){
     super(props)
     const userInfo = USER_INFO.getData()
-    console.log("userInfo", userInfo)
     this.state = {
       list: props.item,
       isOpened: false,
@@ -150,7 +149,13 @@ export default class TrendingRepoItem extends Component {
 
   closeNumClassModal = () => {
     this.setState({
-      isOpened: false
+      isOpened: false,
+      form: {
+        real_time: "",
+        id: 0,
+        event: 3,
+        description:""
+      }
     })
   }
 
@@ -170,6 +175,16 @@ export default class TrendingRepoItem extends Component {
     this.setState({
       form: {
         ...form,
+        description: e.detail.value
+      }
+    })
+  }
+
+  changeVacationDesc = (e) => {
+    const { vacationForm } = this.state
+    this.setState({
+      vacationForm: {
+        ...vacationForm,
         description: e.detail.value
       }
     })
@@ -208,6 +223,9 @@ export default class TrendingRepoItem extends Component {
     const item = this.state.list
     const { categoryType } = this.props
     const { form, isOpened, userInfo, vacationIsOpened, vacationForm } = this.state
+    
+    console.log("item item", item)
+   
     if (!item) return <View />
 
     let currentPeriod = null
@@ -220,6 +238,9 @@ export default class TrendingRepoItem extends Component {
     }
 
     return (
+     <View>
+        
+    
      <View className='trending-content'>
 
       {
@@ -230,43 +251,48 @@ export default class TrendingRepoItem extends Component {
               </View>
               <View className="item-modal-content">
                   <Input className="item-input" value={form.real_time} placeholder="请输入课时数" type='number' onInput={(e) => this.changeNumClass(e)} />
-                  <Textarea className="item-textarea" value={form.description} type='number' onInput={(e) => this.changeDesc(e)} placeholder="请输入备注" />
+                  <Textarea className="item-textarea item-textarea-1" value={form.description} placeholder="请输入备注" type='number' onInput={(e) => this.changeDesc(e)} />
               </View>
               <AtModalAction> <Button onClick={() => this.closeNumClassModal()}>取消</Button> <Button onClick={()=> this.save()}>确定</Button> </AtModalAction>
             </View>
         </View> 
       }
 
-     {
+      {
         vacationIsOpened && <View className='yj-modal'>
             <View className='yj-modal-container'>
               <View className='yj-modal-header'>
                 请输入请假原因
               </View>
               <View className="item-modal-content">
-                  <Textarea className="item-textarea" placeholder='请输入请假原因' value={vacationForm.description} type='number' onInput={(e) => this.changeVacationDesc(e)} />
+                <Textarea className="item-textarea" placeholder='请输入请假原因' value={vacationForm.description} type='number' onInput={(e) => this.changeVacationDesc(e)} />
               </View>
               <AtModalAction> <Button onClick={() => this.closeVactionModal()}>取消</Button> <Button onClick={()=> this.vaction()}>确定</Button> </AtModalAction>
             </View>
         </View> 
       }
+       
 
-      {/* <AtModal isOpened={isOpened}>
+     {/* <AtModal isOpened={isOpened}>
         <AtModalHeader>修改课时</AtModalHeader>
-          <View className="item-modal-content">
-            <Input className="item-input" value={form.real_time} placeholder="请输入课时数" type='number' onInput={(e) => this.changeNumClass(e)} />
-            <Textarea className="item-textarea" value={form.description} type='number' onInput={(e) => this.changeDesc(e)} />
-          </View>
+          <AtModalContent>
+            <View className="item-modal-content">
+              <Input className="item-input" value={form.real_time} placeholder="请输入课时数" type='number' onInput={(e) => this.changeNumClass(e)} />
+              <Textarea className="item-textarea item-textarea-1" value={form.description} type='number' onInput={(e) => this.changeDesc(e)} />
+            </View>
+          </AtModalContent>
         <AtModalAction> <Button onClick={() => this.closeNumClassModal()}>取消</Button> <Button onClick={()=> this.save()}>确定</Button> </AtModalAction>
-      </AtModal> */}
+      </AtModal>
 
-      {/* <AtModal isOpened={vacationIsOpened}>
+      <AtModal isOpened={vacationIsOpened}>
         <AtModalHeader>请输入请假原因</AtModalHeader>
-          <View className="item-modal-content">
-            <Textarea className="item-textarea" value={vacationForm.description} type='number' onInput={(e) => this.changeVacationDesc(e)} />
-          </View>
+          <AtModalContent>
+            <View className="item-modal-content">
+              <Textarea className="item-textarea" value={vacationForm.description} type='number' onInput={(e) => this.changeVacationDesc(e)} />
+            </View>
+          </AtModalContent>
         <AtModalAction> <Button onClick={() => this.closeVactionModal()}>取消</Button> <Button onClick={()=> this.vaction()}>确定</Button> </AtModalAction>
-      </AtModal> */}
+      </AtModal>  */}
 
        <View className='item-card'>
           <View className='item-container'>
@@ -282,41 +308,31 @@ export default class TrendingRepoItem extends Component {
                 {
                    <View className='item-operation'>
                     {
-                      userInfo.type != 1 && item.status == 0 &&  item.teacher_status == 0 && <View className='item-normal-btn' onClick={() => this.sign(item.id)}>签到</View>
+                      item.status == 0 &&  item.student_status == 0 && <View className='item-normal-btn' onClick={() => this.sign(item.id)}>签到</View>
                     }
                     {
-                      item.status == 0 && item.teacher_status == 0 && <View className='item-normal-btn' onClick={() => this.vaction(item.id, 1)}>请假</View>
+                      item.status == 0 && item.student_status == 0 && <View className='item-normal-btn' onClick={() => this.openVactionModal(item)}>请假</View>
                     }
                     {
-                      item.status == 0 && item.teacher_status == 0 && <View className='item-normal-btn' onClick={() => this.toUpdateCourse(item)}>调课</View>
+                      item.status == 0 && item.student_status == 0 && <View className='item-normal-btn' onClick={() => this.toUpdateCourse(item)}>调课</View>
                     }
+                   
                     {
-                      userInfo.type != 1 && item.status == 0 && item.teacher_status == 0 && <View className='item-normal-btn' onClick={() => this.openNumClassModal(item)}>修改课时</View>
-                    }
-
-                    {
-                      item.teacher_status == 1 && <View className='item-btn'>请假审核中</View>
+                      item.student_status == 4 && <View className='item-btn'>请假审核中</View>
                     }
 
                     {
-                      item.teacher_status == 2 && <View className='item-btn'>调课审核中</View>
+                      item.student_status == 5 && <View className='item-btn'>调课审核中</View>
                     }
 
                     {
-                      item.teacher_status == 3 && <View className='item-btn'>修改课时审核中</View>
-                    }   
-
-                    {
-                      item.teacher_status == 6 && <View className='item-btn'>请假完成</View>
+                      item.student_status == 9 && <View className='item-btn'>请假完成</View>
                     }  
 
                     {
-                      item.teacher_status == 7 && <View className='item-btn'>调课完成</View>
+                      item.student_status == 10 && <View className='item-btn'>调课完成</View>
                     }   
-
-                    {
-                      item.teacher_status == 8 && <View className='item-btn'>调课时完成</View>
-                    }    
+    
                   </View>
                 }
              </View>   
@@ -354,6 +370,7 @@ export default class TrendingRepoItem extends Component {
          <Text className='today_title'>{currentPeriod}</Text>
        </View> */}
      </View>
+    </View>
     )
   }
 

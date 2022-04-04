@@ -9,12 +9,12 @@ import Empty from '../../components/index/empty'
 import { http } from '../../utils/http'
 import { timeFormat } from '../../utils/date'
 
-import './list.less'
+import './vacationList.less'
 
-class List extends Component {
+class VacationList extends Component {
 
   config = {
-    navigationBarTitleText: '课程列表',
+    navigationBarTitleText: '请假列表',
     enablePullDownRefresh: true
   }
 
@@ -97,11 +97,9 @@ class List extends Component {
 
   fetchData = async (start_time, end_time) => {
     const { pullStatus } = this.state
-    const result = await http.post("https://mastercenter.cn/api/user/schedul",{
+    const result = await http.post("https://mastercenter.cn/api/user/schedul_leave",{
       limit: 20,
-      page: 1,
-      start_time: start_time / 1000,
-      end_time: end_time / 1000
+      page: 1
     })
     if(result && result.data){
       this.setState({
@@ -117,11 +115,9 @@ class List extends Component {
     this.setState({
       pullStatus: 2
     })
-    const result = await http.post("https://mastercenter.cn/api/user/schedul",{
+    const result = await http.post("https://mastercenter.cn/api/user/schedul_leave",{
       limit: 20,
       page: page + 1,
-      start_time: navStartTime / 1000,
-      end_time: navEndTime / 1000
     })
     if(result && result.data){
       let pullStatus = result.data > 0 ? 1 : 3
@@ -175,4 +171,4 @@ class List extends Component {
   }
 }
 
-export default List
+export default VacationList

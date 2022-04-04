@@ -9,6 +9,9 @@ const USER_INFO = {
 	setData: (data) => {
 		if (data) USER_INFO.user = data
 	},
+	getData: () => {
+		return USER_INFO.user.user
+	},
 	setToken: (token) => {
 		if (token) USER_INFO.user.token = token
 	},
@@ -25,6 +28,7 @@ const USER_INFO = {
 		if (openId) USER_INFO.user.open_id = openId
 	},
 	getOpenId: () => USER_INFO.user.open_id,
+	getUnionId: () => USER_INFO.user.union_id
 }
 
 export default USER_INFO

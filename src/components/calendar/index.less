@@ -68,5 +68,22 @@
         .calendar-disable{
             color: #BEBEBE;
         }
+        .calendar-mission{
+            color: #F5574F;
+            font-weight: 600;
+            position: relative;
+            &::after{
+                content: "";
+                position: absolute;
+                display: inline-block;
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: #ddd;
+                bottom: 0px;
+                left: 50%;
+                transform: translate(-50%);
+            }
+        }
     }
 }

@@ -76,6 +76,34 @@
 					"pathName": "pages/list/list",
 					"query": "s_time=123&e_time=321",
 					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "调课",
+					"pathName": "pages/updateCourse/updateCourse",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "我的",
+					"pathName": "pages/account/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "请假列表",
+					"pathName": "pages/vacationList/vacationList",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "无权限",
+					"pathName": "pages/noUnionId/noUnionId",
+					"query": "",
+					"scene": null
 				}
 			]
 		}

@@ -1,7 +1,7 @@
 import Taro, { Component } from '@tarojs/taro'
 import PropTypes from 'prop-types';
 import { View, Input, Picker } from '@tarojs/components'
-import { AtIcon } from 'taro-ui'
+import { AtIcon, AtBadge } from 'taro-ui'
 
 import './index.less'
 import moment from 'moment';
@@ -12,6 +12,7 @@ export default class Calendar extends Component {
 
   static propTypes = {
     onClickSearch: PropTypes.func,
+    missionList: PropTypes.array
   }
 
   createListWithMonth(month){
@@ -22,6 +23,10 @@ export default class Calendar extends Component {
     const end_with_timestamp = moment(month).endOf("month").valueOf()
     const date = start_with_month._d
     const month_days = start_with_month.daysInMonth()
+
+    const current_day_start_with_timestamp = moment().startOf("day").valueOf()
+    const current_day_end_with_timestamp = current_day_start_with_timestamp + ONE_DAY_TIME
+
     // 2. 获取这是星期几
     const start_with_week = date.getDay()
     // 3. 凭借这个得到前一段时间
@@ -36,10 +41,11 @@ export default class Calendar extends Component {
     // 4. 获取月的这一段时间
     const current_month_with_days = []
     for(let i = 1; i <=month_days; i++){
+      const day_time = start_with_timestamp + (i - 1) * ONE_DAY_TIME
       current_month_with_days.push({
-        type: "normal",
+        type: current_day_start_with_timestamp == day_time ? "active" : "normal",
         value: i,
-        time: start_with_timestamp + (i - 1) * ONE_DAY_TIME
+        time: day_time
       })
     }
 
@@ -47,14 +53,14 @@ export default class Calendar extends Component {
     let showLabelMonthValue =  (value_month < 10 ? "0" + value_month : value_month) + "月 ";
     showLabelMonthValue = showLabelMonthValue + date.getFullYear()
 
-    return [[...prefix_month_with_days, ...current_month_with_days], showLabelMonthValue,[start_with_timestamp, end_with_timestamp]]
+    return [[...prefix_month_with_days, ...current_month_with_days], showLabelMonthValue,[start_with_timestamp, end_with_timestamp], [current_day_start_with_timestamp, current_day_end_with_timestamp]]
   }
 
   // 选择月份
   selectMonth(event){
     const { onClickSearch } = this.props 
     const value = event.detail.value
-    const [daysList, showLabelMonthValue, time ] = this.createListWithMonth(value)
+    const [daysList, showLabelMonthValue, time, todayTime ] = this.createListWithMonth(value)
     this.currentTimeArr = time
     onClickSearch && onClickSearch({
       type: "month",
@@ -72,19 +78,30 @@ export default class Calendar extends Component {
     this.state = {
         weekList: ["日", "一","二", "三","四", "五","六"],
         daysList,
-        showLabelMonthValue
+        showLabelMonthValue,
+        missionList: []
     }
   }
 
   currentTimeArr = []
 
+  componentWillReceiveProps(current, old){
+    this.setState({
+      missionList: current.missionList
+    })
+  }
+
   componentDidMount(){
     const { onClickSearch } = this.props 
-    const [daysList, showLabelMonthValue, time ] = this.createListWithMonth()
+    const [daysList, showLabelMonthValue, time, todayTime  ] = this.createListWithMonth()
     this.currentTimeArr = time
     onClickSearch && onClickSearch({
-      type: "month",
+      type: "init",
       value: time
+    })
+    onClickSearch && onClickSearch({
+      type: "day",
+      value: todayTime
     })
   }
 
@@ -115,7 +132,6 @@ export default class Calendar extends Component {
 
   toList(){
     const currentTimeArr = this.currentTimeArr
-    console.log("currentTimeArr", currentTimeArr)
     Taro.navigateTo({
       url:`/pages/list/list?s_time=${currentTimeArr[0]}&e_time=${currentTimeArr[1]}`
     })
@@ -123,7 +139,7 @@ export default class Calendar extends Component {
 
   render() {
     const { onClickSearch } = this.props
-    const { weekList, showLabelMonthValue, daysList } = this.state
+    const { weekList, showLabelMonthValue, daysList, missionList  } = this.state
     return (
       <View className='calendar-container'>
           <View className='calendar-operation'>
@@ -146,12 +162,15 @@ export default class Calendar extends Component {
           </View>
           <View className='calendar-content'>
               {
-                  daysList.map((item, key)=>{
+                  daysList.map((item, key)=>{                
+                      const haveClass = missionList.some(missionItem => missionItem && (missionItem.split("-")[2] == item.value))
                       return <View key={item}>
                           <View 
-                            className={item.type == "disable" ? "calendar-disable" : item.type == "active" ? "calendar-active" :""} 
+                            className={item.type == "disable" ? "calendar-disable" : item.type == "active" ? "calendar-active" : haveClass ? "calendar-mission" : ""} 
                             onClick={() => this.selectItem(item, key)}
-                            >{item.value}</View>
+                            >{
+                              item.value
+                            }</View>
                         </View>
                   })
               }

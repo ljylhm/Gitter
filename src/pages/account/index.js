@@ -7,6 +7,10 @@ import { GLOBAL_CONFIG } from '../../constants/globalConfig'
 import { baseUrl } from '../../service/config'
 import userAction from '../../actions/user'
 import { hasLogin } from '../../utils/common'
+import { initPage } from '../../utils/blockQueue'
+import { timeFormat } from '../../utils/date'
+import Login from '../../components/Login/index'
+import USER_INFO from '../../constant/user'
 
 import './index.less'
 import api from "../../service/api";
@@ -25,12 +29,14 @@ class Index extends Component {
     super(props)
     this.state = {
       isLogin: false,
-      hasStar: true
+      token: "",
+      hasStar: true,
+      userInfo: {}
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log(this.props, nextProps)
+    // console.log(this.props, nextProps)
   }
 
   componentDidMount() {
@@ -41,10 +47,22 @@ class Index extends Component {
   componentWillUnmount() {
   }
 
-  componentDidShow() {
+  initAction(){
+    const token = USER_INFO.getToken()
+    const userInfo = USER_INFO.getData()
     this.setState({
-      isLogin: hasLogin()
+      isLogin: !!token,
+      userInfo
     })
+  }
+
+  componentDidShow() {
+    initPage.userSubscribe("page-me", ()=>{
+      this.initAction()
+    })
+    // this.setState({
+    //   isLogin: hasLogin()
+    // })
   }
 
   componentDidHide() {
@@ -138,11 +156,32 @@ class Index extends Component {
   }
 
   async login(e) {
-    console.log("e", e)
-    const result = await http.post("https://mastercenter.cn/auth/wx_get_phone",{
-      code: e.detail.code
+    const result = await http.post("https://mastercenter.cn/api/auth/wx_get_phone",{
+          code: e.detail.code,
+          open_id: USER_INFO.getOpenId(),
+          union_id: USER_INFO.getUnionId()
     })
-    console.log("result", result)
+    if(result && result.code == 1001 && result.data && result.data.token ){
+      USER_INFO.setData({
+        user: {
+          ...result.data.user,
+        },
+        token: result.data.token,
+      })
+      this.setState({
+        isLogin: true,
+        userInfo: {
+          ...result.data.user,
+        }
+      })
+    }else{
+      Taro.redirectTo({
+        url: "/pages/noUnionId/noUnionId"
+      })
+      // Taro.showToast({
+      //   title:"登录失败"
+      // })
+    }
   }
 
   handleStar() {
@@ -162,49 +201,48 @@ class Index extends Component {
     })
   }
 
+  toVacationList = () => {
+    Taro.navigateTo({
+      url:`/pages/vacationList/vacationList`
+    })
+  }
+
   render() {
-    const { isLogin, hasStar } = this.state
-    const { userInfo } = this.props
-
-    let repo_counts = userInfo ? Number(userInfo.public_repos) : 0
-    if (userInfo && userInfo.owned_private_repos > 0) {
-      repo_counts += Number(userInfo.owned_private_repos)
-    }
-
+    const { isLogin, userInfo, token } = this.state
     return (
       <View>
         {
           isLogin ? (
-            <View className='content'>
+            <View className='content-me'>
               <Image className='account_bg' src={require('../../assets/images/account_bg.png')} />
               <View className='user_info'>
-                <AtAvatar className='avatar' circle image={userInfo.avatar_url} />
+                <AtAvatar className='avatar' circle image={"https://avatars.githubusercontent.com/u/36689704?s=50"} />
                 {
                   userInfo.name.length > 0 &&
                   <Text className='username'>{userInfo.name}</Text>
                 }
-                <View className='login_name'>@{userInfo.login}</View>
+                <View className='login_name'>{userInfo.description}</View>
               </View>
               <View className='info_view'>
-                {userInfo.bio.length > 0 && <View className='bio'>{userInfo.bio}</View>}
+                {/* {userInfo.bio.length > 0 && <View className='bio'>{userInfo.bio}</View>} */}
                 <View className='item_view'>
                   <View className='item' onClick={this.handleNavigate.bind(this, NAVIGATE_TYPE.REPOS)}>
-                    <View className='title'>{userInfo ? repo_counts : ''}</View>
-                    <View className='desc'>Repos</View>
+                    {/* <View className='title'>{userInfo ? repo_counts : ''}</View> */}
+                    <View className='desc'>{userInfo.school}</View>
                   </View>
                   <View className='line' />
                   <View className='item' onClick={this.handleNavigate.bind(this, NAVIGATE_TYPE.FOLLOWERS)}>
                     <View className='title'>{userInfo.followers}</View>
-                    <View className='desc'>Followers</View>
+                    <View className='desc'>{userInfo && userInfo.birthday && timeFormat(userInfo.birthday, "yyyy-MM-dd")}</View>
                   </View>
-                  <View className='line' />
+                  {/* <View className='line' />
                   <View className='item' onClick={this.handleNavigate.bind(this, NAVIGATE_TYPE.FOLLOWING)}>
                     <View className='title'>{userInfo.following}</View>
                     <View className='desc'>Following</View>
-                  </View>
+                  </View> */}
                 </View>
               </View>
-              {
+              {/* {
                 !hasStar && (
                   <View className='list_view'>
                     <View className='list' onClick={this.handleNavigate.bind(this, NAVIGATE_TYPE.STAR)}>
@@ -213,8 +251,8 @@ class Index extends Component {
                     </View>
                   </View>
                 )
-              }
-              <View className='list_view'>
+              } */}
+              {/* <View className='list_view'>
                 <View className='list' onClick={this.handleNavigate.bind(this, NAVIGATE_TYPE.STARRED_REPOS)}>
                   <View className='list_title'>Starred Repos</View>
                   <AtIcon prefixClass='ion' value='ios-arrow-forward' size='18' color='#7f7f7f' />
@@ -223,8 +261,8 @@ class Index extends Component {
                   <View className='list_title'>Issues</View>
                   <AtIcon prefixClass='ion' value='ios-arrow-forward' size='18' color='#7f7f7f' />
                 </View>
-              </View>
-              <View className='list_view'>
+              </View> */}
+              {/* <View className='list_view'>
                 <View className='list'>
                   <View className='list_title'>Email</View>
                   <View className='list_content'>{userInfo.email.length > 0 ? userInfo.email : '--'}</View>
@@ -241,29 +279,30 @@ class Index extends Component {
                   <View className='list_title'>Location</View>
                   <View className='list_content'>{userInfo.location.length > 0 ? userInfo.location : '--'}</View>
                 </View>
-              </View>
-              <View className='list_view'>
-                <View className='list' onClick={this.handleNavigate.bind(this, NAVIGATE_TYPE.FEEDBACK)}>
-                  <View className='list_title'>Feedback</View>
-                  <AtIcon prefixClass='ion' value='ios-arrow-forward' size='18' color='#7f7f7f' />
+              </View> */}
+              <View className='list_view' onClick={() => this.toVacationList()}>
+                <View className='list'>
+                  <View className='list_title'>请假列表</View>
+                  <AtIcon prefixClass='ion' value='ios-arrow-forward' size='14' color='#7f7f7f' />
                 </View>
-                <View className='list' onClick={this.handleNavigate.bind(this, NAVIGATE_TYPE.ABOUT)}>
+                {/* <View className='list' onClick={this.handleNavigate.bind(this, NAVIGATE_TYPE.ABOUT)}>
                   <View className='list_title'>About</View>
                   <AtIcon prefixClass='ion' value='ios-arrow-forward' size='18' color='#7f7f7f' />
-                </View>
+                </View> */}
               </View>
               <View className='bottom_view' />
             </View>
           ) : (
-              <View className='content'>
+              // <Login callback={(e) => this.initAction(e)}/>
+              <View className='content-me'>
                 <Image mode='aspectFit'
                   className='logo'
                   src={require('../../assets/images/octocat.png')} />
-                <Button className='login_button' open-type='getPhoneNumber' onGetPhoneNumber={(e)=>this.login(e)}></Button>
-                <View className='login_button'
+                <Button className='login_button' open-type='getPhoneNumber' onGetPhoneNumber={this.login}>Login</Button>
+                {/* <View className='login_button'
                   onClick={this.login.bind(this)}>
                   Login
-                </View>
+                </View> */}
               </View>
             )
         }

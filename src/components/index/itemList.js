@@ -3,14 +3,16 @@ import PropTypes from 'prop-types';
 import { View } from '@tarojs/components'
 
 import TrendingRepoItem from './trendingRepoItem'
+import StudentRepoItem from './studentRepoItem'
 import TrendingDeveloperItem from './trendingDeveloperItem'
+import USER_INFO from '../../constant/user';
 
 export default class ItemList extends Component {
 
   static propTypes = {
     type: PropTypes.number,
     itemList: PropTypes.array,
-    categoryType: PropTypes.number
+    categoryType: PropTypes.number,
   }
 
   static defaultProps = {
@@ -20,6 +22,10 @@ export default class ItemList extends Component {
   }
 
   componentWillMount() {
+      const userInfo = USER_INFO.getData()
+      this.setState({
+        userInfo
+      })
   }
 
   handleRepoClicked(item) {
@@ -38,13 +44,16 @@ export default class ItemList extends Component {
 
   render() {
     const { itemList, type, categoryType } = this.props
+    const { userInfo } = this.state
     let list
     switch (type) {
       case 0: {
         list = itemList.map((item, index) => {
           return (
-            <View key={index} onClick={this.handleRepoClicked.bind(this, item)}>
-              <TrendingRepoItem item={item} categoryType={categoryType} />
+            <View key={index}>
+              {
+                userInfo.type == 3 ?  <TrendingRepoItem item={item} categoryType={categoryType} /> :  <StudentRepoItem item={item} categoryType={categoryType} /> 
+              }
             </View>
           )
         })
