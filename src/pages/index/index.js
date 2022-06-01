@@ -23,7 +23,7 @@ class Index extends Component {
 
   config = {
     navigationBarTitleText: '我的课程',
-    enablePullDownRefresh: true
+    enablePullDownRefresh: false
   }
 
   constructor(props) {

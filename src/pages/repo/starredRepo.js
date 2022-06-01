@@ -13,7 +13,7 @@ class StarredRepo extends Component {
 
   config = {
     navigationBarTitleText: 'Starred Repos',
-    enablePullDownRefresh: true
+    enablePullDownRefresh: false
   }
 
   constructor(props) {

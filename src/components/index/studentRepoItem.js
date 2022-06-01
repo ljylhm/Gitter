@@ -63,7 +63,8 @@ export default class StudentRepoItem extends Component {
       })
     }else{
       Taro.showToast({
-        title: "签到失败"
+        title: "签到失败",
+        icon: "none"
       })
     }
   }
@@ -115,7 +116,8 @@ export default class StudentRepoItem extends Component {
       })
     }else{
       Taro.showToast({
-        title: "请求失败，请重试"
+        title: "请求失败，请重试",
+        icon: "none"
       })
     }
   }
@@ -214,7 +216,8 @@ export default class StudentRepoItem extends Component {
       },2000)
     }else{
       Taro.showToast({
-        title: result.msg || "修改失败"
+        title: result.msg || "修改失败",
+        icon: "none"
       })
     }
   }
@@ -298,18 +301,20 @@ export default class StudentRepoItem extends Component {
           <View className='item-container'>
              <View className='item-line-icon'></View>
              <View className='item-content'>
-                <View className='item-title'>{ timeFormat(Number(item.start_time) * 1000, "hh:mm") }-{  timeFormat(Number(item.end_time) * 1000, "hh:mm")}{" "}{item.real_time}课时 </View>
+                <View className='item-title'>{timeFormat(Number(item.start_time) * 1000, "yyyy-MM-dd")}</View>
+                <View className='item-text'>{ timeFormat(Number(item.start_time) * 1000, "hh:mm") }-{  timeFormat(Number(item.end_time) * 1000, "hh:mm")}{" "}{item.real_time}课时 </View>
                 <View className='item-text'>{item.classroom_name || "--"}-{item.course_name || "--"}</View>
                 <View className='item-text'>{item.student_name || "--"} {" · "} ({this.mapToWeek[new Date(item.start_time * 1000).getDay()]}{ timeFormat(Number(item.start_time) * 1000, "hh:mm") }-{  timeFormat(Number(item.end_time) * 1000, "hh:mm")})</View>
                 <View className='item-text'>{item.student_name} {" · "} {item.classroom_name}</View>
-                <View className='item-btn'>{
-                  item.status == 0 ? "未签到" : item.status == 1 ? "签到未审核" : "已签到"
-                }</View>
+                {
+                   item.status == 1 && <View className='item-btn'>上课已完结</View>
+                }
+               
                 {
                    <View className='item-operation'>
-                    {
+                    {/* {
                       item.status == 0 &&  item.student_status == 0 && <View className='item-normal-btn' onClick={() => this.sign(item.id)}>签到</View>
-                    }
+                    } */}
                     {
                       item.status == 0 && item.student_status == 0 && <View className='item-normal-btn' onClick={() => this.openVactionModal(item)}>请假</View>
                     }

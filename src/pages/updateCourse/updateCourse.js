@@ -83,7 +83,6 @@ export default class UpdateCourse extends Taro.Component {
 
   // 选中日期
   selectStartDate = (e) => {
-    console.log("eee", e)
     const { form } = this.state
     this.setState({
      form:{
@@ -105,7 +104,6 @@ export default class UpdateCourse extends Taro.Component {
 
   // 选中教室
   selectClassRoom = (item) => {
-    console.log("item item", item)
     const { form } = this.state
     this.setState({
       form: {
@@ -141,8 +139,9 @@ export default class UpdateCourse extends Taro.Component {
 
   save = async () => {
     const { form } = this.state
-    const { start_day, start_time, end_time, classroom_id, id, description } = form
-    const ONE_DAY_TIME = 1000 * 60 * 60 *24
+    let { start_day, start_time, end_time, classroom_id, id, description } = form
+    const ONE_DAY_TIME = 1000 * 60 * 60
+    start_day = start_day.replaceAll("-", "/")
     let wrapStartTime = new Date(start_day + " " + start_time).getTime() 
     let wrapEndTime = new Date(start_day + " " + end_time).getTime()
     if(wrapStartTime >= wrapEndTime){
@@ -168,17 +167,15 @@ export default class UpdateCourse extends Taro.Component {
         start_time: wrapStartTime / 1000,
         end_time: wrapEndTime / 1000
       }],
-      real_time: ((wrapEndTime - wrapStartTime) / ONE_DAY_TIME).toFixed(2),
+      real_time: Number(((wrapEndTime - wrapStartTime) / ONE_DAY_TIME).toFixed(2)),
       event: userInfo.type == 3 ? 2 : 5,
       classroom_id,
       description
     }
-
-    console.log("warpForm", wrapForm)
-
     const result = await http.post("https://mastercenter.cn/api/schedul/event",wrapForm, {
       'Content-Type': 'application/json',
     })
+    console.log("result", result)
     if(result && result.data && result.code === "1001"){
       wx.setStorageSync("update-result", {
         ...result.data,
@@ -197,14 +194,14 @@ export default class UpdateCourse extends Taro.Component {
       },2500)
     }else{
       Taro.showToast({
-        title: result.msg || "修改失败"
+        title: result.msg || "修改失败",
+        icon: "none"
       })
     }
   }
 
   render () {
     const { list, value, form, courseType } = this.state
-    console.log("list list", list)
     return (
       <View className='update-course-content'>
         <Picker mode="date" fields="day" value={form.start_day} onChange={(e) => this.selectMonth(e)}>
@@ -260,7 +257,7 @@ export default class UpdateCourse extends Taro.Component {
           <View className='update-item-title'>调课原因</View>
         </View>
 
-        <View className='update-item-container' onClick={() => this.selectClassRoom(item)}>
+        <View className='update-item-container'>
           <View className='update-item-content'>
             <Textarea className="item-textarea item-textarea-1" value={form.description} placeholder="请输入调课原因" onInput={(e) => this.changeDesc(e)} />
           </View>

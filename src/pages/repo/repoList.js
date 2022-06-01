@@ -14,7 +14,7 @@ class RepoList extends Component {
 
   config = {
     navigationBarTitleText: 'Repos',
-    enablePullDownRefresh: true,
+    enablePullDownRefresh: false,
   }
 
   constructor(props) {

@@ -15,7 +15,7 @@ class VacationList extends Component {
 
   config = {
     navigationBarTitleText: '请假列表',
-    enablePullDownRefresh: true
+    enablePullDownRefresh: false
   }
 
   constructor(props) {
@@ -132,7 +132,7 @@ class VacationList extends Component {
       })
       Taro.showToast({
         title: "发生了一点错误",
-        icon: 'warning',
+        icon: 'none',
       })
     }
   }

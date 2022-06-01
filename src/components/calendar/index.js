@@ -116,7 +116,7 @@ export default class Calendar extends Component {
     wrapDaysList = wrapDaysList.map((item, key)=>{
       return {
         ...item,
-        type: index == key ? "active" : item
+        type: index == key ? "active" : item.type == "disable" ? item.type : "normal"
       }
     })
     wrapDaysList[index].type = "active"
@@ -133,13 +133,14 @@ export default class Calendar extends Component {
   toList(){
     const currentTimeArr = this.currentTimeArr
     Taro.navigateTo({
-      url:`/pages/list/list?s_time=${currentTimeArr[0]}&e_time=${currentTimeArr[1]}`
+      url:`/pages/list/list?s_time=${currentTimeArr[0]}`
     })
   }
 
   render() {
     const { onClickSearch } = this.props
     const { weekList, showLabelMonthValue, daysList, missionList  } = this.state
+    console.log("daysList", daysList)
     return (
       <View className='calendar-container'>
           <View className='calendar-operation'>
@@ -164,10 +165,10 @@ export default class Calendar extends Component {
               {
                   daysList.map((item, key)=>{                
                       const haveClass = missionList.some(missionItem => missionItem && (missionItem.split("-")[2] == item.value))
-                      return <View key={item}>
+                      console.log("item key", item.type)
+                      return <View key={item.item.value} onClick={() => this.selectItem(item, key)}>
                           <View 
                             className={item.type == "disable" ? "calendar-disable" : item.type == "active" ? "calendar-active" : haveClass ? "calendar-mission" : ""} 
-                            onClick={() => this.selectItem(item, key)}
                             >{
                               item.value
                             }</View>

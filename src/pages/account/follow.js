@@ -12,7 +12,7 @@ import api from "../../service/api";
 class Follow extends Component {
 
   config = {
-    enablePullDownRefresh: true
+    enablePullDownRefresh: false
   }
 
   constructor(props) {

@@ -16,7 +16,7 @@ class Index extends Component {
 
   config = {
     navigationBarTitleText: 'Activity',
-    enablePullDownRefresh: true
+    enablePullDownRefresh: false
   }
 
   constructor(props) {

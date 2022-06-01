@@ -15,11 +15,12 @@ class List extends Component {
 
   config = {
     navigationBarTitleText: '课程列表',
-    enablePullDownRefresh: true
+    enablePullDownRefresh: false
   }
 
   constructor(props) {
     super(props)
+    this.startTime = ""
     this.state = {
       list: [],
       pullStatus: 1     // 1 没有 2 正在拉取 3 没有数据 
@@ -41,11 +42,13 @@ class List extends Component {
 
   componentWillUnmount() { }
 
+  
+
   componentDidShow() {
 
     initPage.userSubscribe("list", () => {
         const params = this.$router.params
-        console.log(params)
+        this.startTime = moment().startOf('day')._d.getTime()
         this.fetchData(params.s_time, params.e_time)
     })
 
@@ -101,7 +104,7 @@ class List extends Component {
       limit: 20,
       page: 1,
       start_time: start_time / 1000,
-      end_time: end_time / 1000
+      end_time: ""
     })
     if(result && result.data){
       this.setState({
@@ -114,14 +117,15 @@ class List extends Component {
   fetchOnPull = async () => {
     const { navStartTime, navEndTime, list } = this.state
     const { page } = this.pageParam
+    
     this.setState({
       pullStatus: 2
     })
     const result = await http.post("https://mastercenter.cn/api/user/schedul",{
       limit: 20,
       page: page + 1,
-      start_time: navStartTime / 1000,
-      end_time: navEndTime / 1000
+      start_time: this.startTime / 1000,
+      end_time: ""
     })
     if(result && result.data){
       let pullStatus = result.data > 0 ? 1 : 3

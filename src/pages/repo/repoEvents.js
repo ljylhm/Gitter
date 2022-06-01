@@ -15,7 +15,7 @@ class RepoEvents extends Component {
 
   config = {
     navigationBarTitleText: 'Events',
-    enablePullDownRefresh: true
+    enablePullDownRefresh: false
   }
 
   constructor(props) {

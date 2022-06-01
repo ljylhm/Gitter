@@ -17,7 +17,7 @@ class Issues extends Component {
 
   config = {
     navigationBarTitleText: 'Issues',
-    enablePullDownRefresh: true
+    enablePullDownRefresh: false
   }
 
   constructor(props) {

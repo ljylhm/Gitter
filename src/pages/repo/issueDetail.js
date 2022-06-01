@@ -15,7 +15,7 @@ class IssueDetail extends Component {
 
   config = {
     navigationBarTitleText: 'Issue Comments',
-    enablePullDownRefresh: true
+    enablePullDownRefresh: false
   }
 
   constructor(props) {

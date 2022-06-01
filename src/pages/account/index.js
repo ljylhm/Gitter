@@ -22,7 +22,7 @@ class Index extends Component {
     navigationBarTitleText: '',
     navigationBarBackgroundColor: '#2d8cf0',
     navigationBarTextStyle: 'white',
-    enablePullDownRefresh: true
+    enablePullDownRefresh: false
   }
 
   constructor(props) {

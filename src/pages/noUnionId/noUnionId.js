@@ -9,7 +9,7 @@ class noUnionId extends Component {
     navigationBarTitleText: '无权限',
     navigationBarBackgroundColor: '#2d8cf0',
     navigationBarTextStyle: 'white',
-    enablePullDownRefresh: true
+    enablePullDownRefresh: false
   }
 
   constructor(props) {

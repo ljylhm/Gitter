@@ -17,7 +17,7 @@ class Repo extends Component {
 
   config = {
     navigationBarTitleText: '',
-    enablePullDownRefresh: true,
+    enablePullDownRefresh: false,
     navigationBarBackgroundColor: '#2d8cf0',
     navigationBarTextStyle: 'white'
   }
