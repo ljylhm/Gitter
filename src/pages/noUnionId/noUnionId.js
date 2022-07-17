@@ -1,6 +1,8 @@
 import Taro, { Component } from '@tarojs/taro'
 import { View, Image, Text, Button } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
+import USER_INFO from '../../constant/user'
+import { http } from '../../utils/http'
 import './noUnionId.less'
 
 class noUnionId extends Component {
@@ -29,6 +31,30 @@ class noUnionId extends Component {
   componentWillUnmount() {
   }
 
+  async login(e) {
+    const result = await http.post("https://mastercenter.cn/api/auth/wx_get_phone",{
+          code: e.detail.code,
+          open_id: USER_INFO.getOpenId(),
+          union_id: USER_INFO.getUnionId()
+    })
+    if(result && result.code == 1001 && result.data && result.data.token ){
+      USER_INFO.setData({
+        user: {
+          ...result.data.user,
+        },
+        token: result.data.token,
+      })
+      Taro.switchTab({
+        url: "/pages/index/index"
+     })
+    }else{
+      Taro.showToast({
+        title: "暂无权限",
+        icon: "warning"
+      })
+    }
+  }
+
   render() {
 
     return (
@@ -39,7 +65,10 @@ class noUnionId extends Component {
                 className='logo'
                 src={require('../../assets/images/octocat.png')} />
             {/* <Button className='login_button' open-type='getPhoneNumber'>Login</Button> */}
-            <View className='warn_button'>暂无权限，请联系管理员</View>
+            <View className='warn_button'>暂无权限，请联系管理员后刷新</View>
+            <View className='content-me'>
+              <Button className='login_button' open-type='getPhoneNumber' onGetPhoneNumber={this.login}>刷新</Button>
+            </View>
            </View>
          }
       </View>

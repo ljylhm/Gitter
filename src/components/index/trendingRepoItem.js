@@ -207,6 +207,15 @@ export default class TrendingRepoItem extends Component {
     }
   }
 
+  changeVacationDesc = (e) => {
+    this.setState({
+      vacationForm: {
+        ...this.state.vacationForm,
+        description: e.detail.value
+      }
+    })
+  }
+
   render() {
     const item = this.state.list
     const { categoryType } = this.props
@@ -278,8 +287,8 @@ export default class TrendingRepoItem extends Component {
                 <View className='item-title'>{timeFormat(Number(item.start_time) * 1000, "yyyy-MM-dd")}</View>
                 <View className='item-text'>{ timeFormat(Number(item.start_time) * 1000, "hh:mm") }-{  timeFormat(Number(item.end_time) * 1000, "hh:mm")}{" "}{item.real_time}课时 </View>
                 <View className='item-text'>{item.classroom_name || "--"}-{item.course_name || "--"}</View>
-                <View className='item-text'>{item.student_name || "--"} {" · "} ({this.mapToWeek[new Date(item.start_time * 1000).getDay()]}{ timeFormat(Number(item.start_time) * 1000, "hh:mm") }-{  timeFormat(Number(item.end_time) * 1000, "hh:mm")})</View>
-                <View className='item-text'>{item.student_name} {" · "} {item.classroom_name}</View>
+                <View className='item-text'>{item.status == 0 ? item.teacher_name : item.student_name} {" · "} ({this.mapToWeek[new Date(item.start_time * 1000).getDay()]}{ timeFormat(Number(item.start_time) * 1000, "hh:mm") }-{  timeFormat(Number(item.end_time) * 1000, "hh:mm")})</View>
+                <View className='item-text'>{item.status == 0 ? item.teacher_name : item.student_name} {" · "} {item.classroom_name}</View>
                 <View className='item-btn'>{
                   item.status == 0 ? "未签到" : item.status == 1 ? "签到未审核" : "已签到"
                 }</View>
@@ -289,7 +298,7 @@ export default class TrendingRepoItem extends Component {
                       userInfo.type != 1 && item.status == 0 &&  item.teacher_status == 0 && <View className='item-normal-btn' onClick={() => this.sign(item.id)}>签到</View>
                     }
                     {
-                      item.status == 0 && item.teacher_status == 0 && <View className='item-normal-btn' onClick={() => this.vaction(item.id, 1)}>请假</View>
+                      item.status == 0 && item.teacher_status == 0 && <View className='item-normal-btn' onClick={() => this.openVactionModal(item)}>请假</View>
                     }
                     {
                       item.status == 0 && item.teacher_status == 0 && <View className='item-normal-btn' onClick={() => this.toUpdateCourse(item)}>调课</View>

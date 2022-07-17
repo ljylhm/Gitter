@@ -221,7 +221,7 @@ class Index extends Component {
                   userInfo.name.length > 0 &&
                   <Text className='username'>{userInfo.name}</Text>
                 }
-                <View className='login_name'>{userInfo.description}</View>
+                {/* <View className='login_name'>{userInfo.description}</View> */}
               </View>
               <View className='info_view'>
                 {/* {userInfo.bio.length > 0 && <View className='bio'>{userInfo.bio}</View>} */}
@@ -232,7 +232,7 @@ class Index extends Component {
                   </View>
                   <View className='line' />
                   <View className='item' onClick={this.handleNavigate.bind(this, NAVIGATE_TYPE.FOLLOWERS)}>
-                    <View className='title'>{userInfo.followers}</View>
+                    {/* <View className='title'>{userInfo.followers}</View> */}
                     <View className='desc'>{userInfo && userInfo.birthday && timeFormat(userInfo.birthday, "yyyy-MM-dd")}</View>
                   </View>
                   {/* <View className='line' />

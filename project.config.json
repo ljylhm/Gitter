@@ -104,6 +104,12 @@
 					"pathName": "pages/noUnionId/noUnionId",
 					"query": "",
 					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "无权限页",
+					"pathName": "pages/noUnionId/noUnionId",
+					"scene": null
 				}
 			]
 		}
