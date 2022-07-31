@@ -204,9 +204,9 @@ class Index extends Component {
 
   onShareAppMessage(obj) {
     return {
-      title: 'Github 今日热榜，随时随地发现您喜欢的开源项目',
+      title: '',
       path: '/pages/index/index',
-      imageUrl: 'http://img.huangjianke.com/cover.png'
+      imageUrl: 'https://imgqn.smm.cn/production/b/image/jqUhW20220721144516.png'
     }
   }
 

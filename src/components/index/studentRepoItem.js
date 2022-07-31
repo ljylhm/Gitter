@@ -227,8 +227,6 @@ export default class StudentRepoItem extends Component {
     const { categoryType } = this.props
     const { form, isOpened, userInfo, vacationIsOpened, vacationForm } = this.state
     
-    console.log("item item", item)
-   
     if (!item) return <View />
 
     let currentPeriod = null
@@ -304,8 +302,8 @@ export default class StudentRepoItem extends Component {
                 <View className='item-title'>{timeFormat(Number(item.start_time) * 1000, "yyyy-MM-dd")}</View>
                 <View className='item-text'>{ timeFormat(Number(item.start_time) * 1000, "hh:mm") }-{  timeFormat(Number(item.end_time) * 1000, "hh:mm")}{" "}{item.real_time}课时 </View>
                 <View className='item-text'>{item.classroom_name || "--"}-{item.course_name || "--"}</View>
-                <View className='item-text'>{item.student_name || "--"} {" · "} ({this.mapToWeek[new Date(item.start_time * 1000).getDay()]}{ timeFormat(Number(item.start_time) * 1000, "hh:mm") }-{  timeFormat(Number(item.end_time) * 1000, "hh:mm")})</View>
-                <View className='item-text'>{item.student_name} {" · "} {item.classroom_name}</View>
+                <View className='item-text'>{userInfo.type == "3" ?  item.student_name : item.teacher_name} {" · "} ({this.mapToWeek[new Date(item.start_time * 1000).getDay()]}{ timeFormat(Number(item.start_time) * 1000, "hh:mm") }-{  timeFormat(Number(item.end_time) * 1000, "hh:mm")})</View>
+                <View className='item-text'>{userInfo.type == "3" ?  item.student_name : item.teacher_name}</View>
                 {
                    item.status == 1 && <View className='item-btn'>上课已完结</View>
                 }

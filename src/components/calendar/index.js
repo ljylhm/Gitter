@@ -140,7 +140,6 @@ export default class Calendar extends Component {
   render() {
     const { onClickSearch } = this.props
     const { weekList, showLabelMonthValue, daysList, missionList  } = this.state
-    console.log("daysList", daysList)
     return (
       <View className='calendar-container'>
           <View className='calendar-operation'>
@@ -165,7 +164,6 @@ export default class Calendar extends Component {
               {
                   daysList.map((item, key)=>{                
                       const haveClass = missionList.some(missionItem => missionItem && (missionItem.split("-")[2] == item.value))
-                      console.log("item key", item.type)
                       return <View key={item.item.value} onClick={() => this.selectItem(item, key)}>
                           <View 
                             className={item.type == "disable" ? "calendar-disable" : item.type == "active" ? "calendar-active" : haveClass ? "calendar-mission" : ""} 
