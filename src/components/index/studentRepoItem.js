@@ -317,7 +317,7 @@ export default class StudentRepoItem extends Component {
                       item.status == 0 && item.student_status == 0 && <View className='item-normal-btn' onClick={() => this.openVactionModal(item)}>请假</View>
                     }
                     {
-                      item.status == 0 && item.student_status == 0 && <View className='item-normal-btn' onClick={() => this.toUpdateCourse(item)}>调课</View>
+                      item.status == 0 && (item.student_status == 0 || item.student_status == 10) && <View className='item-normal-btn' onClick={() => this.toUpdateCourse(item)}>调课</View>
                     }
                    
                     {

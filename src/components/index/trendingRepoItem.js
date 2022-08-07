@@ -296,16 +296,16 @@ export default class TrendingRepoItem extends Component {
                 {
                    <View className='item-operation'>
                     {
-                      userInfo.type != 1 && item.status == 0 &&  item.teacher_status == 0 && <View className='item-normal-btn' onClick={() => this.sign(item.id)}>签到</View>
+                      userInfo.type != 1 && item.status == 0 &&  (item.teacher_status == 0 || item.teacher_status == 7 || item.teacher_status == 8) && (Date.now() > Number(item.end_time) * 1000) && <View className='item-normal-btn' onClick={() => this.sign(item.id)}>签到</View>
                     }
                     {
                       item.status == 0 && item.teacher_status == 0 && <View className='item-normal-btn' onClick={() => this.openVactionModal(item)}>请假</View>
                     }
                     {
-                      item.status == 0 && item.teacher_status == 0 && <View className='item-normal-btn' onClick={() => this.toUpdateCourse(item)}>调课</View>
+                      item.status == 0 && (item.teacher_status == 0 || item.teacher_status == 7 || item.teacher_status == 8) && <View className='item-normal-btn' onClick={() => this.toUpdateCourse(item)}>调课</View>
                     }
                     {
-                      userInfo.type != 1 && item.status == 0 && item.teacher_status == 0 && <View className='item-normal-btn' onClick={() => this.openNumClassModal(item)}>修改课时</View>
+                      userInfo.type != 1 && item.status == 0 && (item.teacher_status == 0 || item.teacher_status == 7 || item.teacher_status == 8) && <View className='item-normal-btn' onClick={() => this.openNumClassModal(item)}>修改课时</View>
                     }
 
                     {
